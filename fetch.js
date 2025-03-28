@@ -1,41 +1,36 @@
-const axios = require('axios');
-const fs = require('fs');
+const fetch = require('node-fetch');
 
 async function fetchData(url) {
-    if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        console.log('Harap awali URL dengan http:// atau https://');
-        return;
-    }
-
     try {
-        const response = await axios.get(url, {
-            headers: {
-                "User-Agent": "Mozilla/5.0"
-            },
-            responseType: 'arraybuffer'
-        });
-
-        const contentType = response.headers['content-type'];
-        console.log(`Content-Type: ${contentType}`);
-
-        if (/json/i.test(contentType)) {
-            console.log(JSON.parse(response.data.toString('utf8')));
-        } else if (/text/i.test(contentType)) {
-            console.log(response.data.toString('utf8'));
-        } else {
-            const ext = contentType.split('/')[1].split(';')[0];
-            const filename = `downloaded.${ext}`;
-            fs.writeFileSync(filename, response.data);
-            console.log(`File disimpan sebagai: ${filename}`);
-        }
+        const response = await fetch(url);
+        const text = await response.text();
+        console.log(decodeURIComponent(text)); // Otomatis decode hasilnya
     } catch (error) {
-        console.error(`Terjadi kesalahan: ${error.message}`);
+        console.error('Error fetching data:', error);
+    }
+}
+
+function decodeText(encodedText) {
+    try {
+        console.log(decodeURIComponent(encodedText));
+    } catch (error) {
+        console.error('Error decoding text:', error);
     }
 }
 
 const args = process.argv.slice(2);
-if (args.length === 0) {
-    console.log('Gunakan: node fetch.js <URL>');
+
+if (args.length > 1) {
+    const command = args[0];
+    const value = args[1];
+
+    if (command === 'fetch') {
+        fetchData(value);
+    } else if (command === 'decode') {
+        decodeText(value);
+    } else {
+        console.log('Perintah tidak dikenali. Gunakan "fetch" atau "decode".');
+    }
 } else {
-    fetchData(args[0]);
-          }
+    console.log('Gunakan: node tool.js <command> <value>');
+}
