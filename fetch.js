@@ -1,4 +1,5 @@
-const fetch = require('node-fetch');
+// Mengimpor fetch untuk node-fetch v3.x.x
+import fetch from 'node-fetch';
 
 async function fetchData(url) {
     try {
@@ -32,5 +33,5 @@ if (args.length > 1) {
         console.log('Perintah tidak dikenali. Gunakan "fetch" atau "decode".');
     }
 } else {
-    console.log('Gunakan: node tool.js <command> <value>');
+    console.log('Gunakan: node tool.mjs <command> <value>');
 }
